@@ -1,0 +1,43 @@
+{
+	"name": "bytedance-mini-pay",
+	"version": "0.0.1",
+	"description": "字节跳动小程序支付SDK",
+	"main": "lib/index.js",
+	"scripts": {
+		"build": "rollup -c ./rollup.config.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/flxxyz/bytedance-mini-pay.git"
+	},
+	"keywords": [
+		"字节小程序支付",
+		"字节小程序",
+		"bytedance"
+	],
+	"author": {
+		"name": "flxxyz",
+		"email": "i@mdzz.name"
+	},
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/flxxyz/bytedance-mini-pay/issues"
+	},
+	"homepage": "https://github.com/flxxyz/bytedance-mini-pay#readme",
+	"publishConfig": {
+		"registry": "https://registry.npmjs.org/",
+		"access": "public"
+	},
+	"dependencies": {
+		"node-fetch": "^2.6.1"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.14.6",
+		"rollup": "^2.53.1",
+		"rollup-plugin-babel": "^4.4.0",
+		"rollup-plugin-commonjs": "^10.1.0",
+		"rollup-plugin-json": "^4.0.0",
+		"rollup-plugin-node-resolve": "^5.2.0",
+		"rollup-plugin-uglify": "^6.0.4"
+	}
+}
