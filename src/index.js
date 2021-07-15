@@ -1,13 +1,17 @@
 import { createHash } from 'crypto';
 import fetch from 'node-fetch';
 
+export {
+  TTPay
+};
+
 /**
  * TTPay
  * @constructor
  * @class
  * @public
  */
-class TTPay {
+export default class TTPay {
   API_URL = 'https://developer.toutiao.com/api/apps/ecpay/v1';
 
   skipArr = ['app_id', 'thirdparty_id', 'sign'];
@@ -30,6 +34,16 @@ class TTPay {
     notifyURL: '',
   };
 
+  /**
+   * @constructor
+   * @param {object} config 初始化配置
+   * @param {string} config.appId 字节小程序AppId
+   * @param {string} config.appSecret 字节小程序秘钥
+   * @param {string} config.[mchId] 商户号
+   * @param {string} config.TOKEN 担保交易的令牌
+   * @param {string} config.SALT 担保交易的SALT
+   * @param {string} config.[notifyURL] 支付回调URL
+   */
   constructor(config) {
     if (!config.appId) { throw Error('config.appId is required'); }
     if (!config.appSecret) { throw Error('config.appSecret is required'); }
@@ -82,7 +96,7 @@ class TTPay {
   }
 
   /**
-   * @summary 通用 create 函数
+   * @summary 构造通用参数的函数
    * @method _genParams
    * @param {string} action 操作 create, query
    * @param {object} options 额外请求参数
@@ -241,5 +255,3 @@ class TTPay {
    */
   ackNotify = (fn = () => { }) => fn('{"err_no":0,"err_tips":"success"}');
 }
-
-export default TTPay;
