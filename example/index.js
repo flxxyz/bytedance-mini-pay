@@ -8,12 +8,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const ttpay = new TTPay({
-  appId: '你的AppId',
-  appSecret: '你的AppSecret',
-  SALT: '你的SALT',
-  // TOKEN: '你的TOKEN', // 可选
-  // mchId: '你的商户号', // 可选
-  // notifyURL: '你的支付回调URL', // 可选
+  appId: process.env.TT_APPID ?? '你的AppId',
+  appSecret: process.env.TT_SECRET ?? '你的AppSecret',
+  SALT: process.env.TT_SALT ?? '你的SALT',
+  TOKEN: process.env.TT_TOKEN ?? '你的TOKEN', // 可选 (为了安全起见，最好是配置上)
+  mchId: process.env.TT_MCHID ?? '你的商户号', // 可选
+  notifyURL: process.env.TT_NOTIFY_URL ?? '你的支付回调URL', // 可选
 });
 
 app.post('/order', async (req, res) => {
@@ -28,12 +28,10 @@ app.post('/order', async (req, res) => {
     .finally(() => res.end());
 });
 
-app.get('/refund/:id', async (req, res) => {
-  const { id: orderNo } = req.params;
-  const refundNo = `${orderNo}-${Number((Math.random() % 1000) * 10000).toFixed(0)}`;
-  console.log('refundNo:', refundNo);
+app.post('/refund', async (req, res) => {
+  const { orderNo, refundNo, amount, reason = 'RNM, 退钱!' } = req.body;
 
-  ttpay.createRefund(orderNo, refundNo, 1, 'RNM, 退钱!')
+  ttpay.createRefund(orderNo, refundNo, amount, reason)
     .then(resp => res.send(resp))
     .catch(err => res.send(err))
     .finally(() => res.end());
