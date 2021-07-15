@@ -1,19 +1,44 @@
 import { createHash } from 'crypto';
 import fetch from 'node-fetch';
 
-export class TTPay {
+/**
+ * TTPay
+ * @constructor
+ * @class
+ * @public
+ */
+class TTPay {
   API_URL = 'https://developer.toutiao.com/api/apps/ecpay/v1';
+
+  skipArr = ['app_id', 'thirdparty_id', 'sign'];
+
+  /**
+   * @property {object} config
+   * @property {string} config.appId 字节小程序AppId
+   * @property {string} config.appSecret 字节小程序秘钥
+   * @property {string} config.[mchId] 商户号
+   * @property {string} config.TOKEN 担保交易的令牌
+   * @property {string} config.SALT 担保交易的SALT
+   * @property {string} config.[notifyURL] 支付回调URL
+   */
+  config = {
+    appId: '',
+    appSecret: '',
+    mchId: '',
+    SALT: '',
+    TOKEN: '',
+    notifyURL: '',
+  };
 
   constructor(config) {
     if (!config.appId) { throw Error('config.appId is required'); }
     if (!config.appSecret) { throw Error('config.appSecret is required'); }
     if (!config.SALT) { throw Error('config.SALT is required'); }
 
-    if (!config.notifyURL) { }
-
-    this.config = Object.assign({
+    this.config = {
       TOKEN: '',
-    }, config);
+      ...config,
+    };
   }
 
   /**
@@ -23,10 +48,9 @@ export class TTPay {
    * @returns {string} 签名
    */
   _genSign(params) {
-    const skipArr = ['app_id', 'thirdparty_id', 'sign'];
     const unsignArr = [];
     for (let key in params) {
-      if (skipArr.indexOf(key) != -1) {
+      if (this.skipArr.indexOf(key) != -1) {
         continue;
       }
       unsignArr.push(params[key]);
@@ -37,26 +61,68 @@ export class TTPay {
       .digest('hex');
   }
 
-
   /**
    * @summary 发送请求
    * @method _request
    * @param {string} uri 请求链接
    * @param {object} body 请求体
-   * @returns {Promise} 响应结果
+   * @returns {Promise<Response>} 响应结果
    */
   async _request(uri, body = {}) {
-    if (!uri) { throw Error('method is not found'); }
+    if (!uri) { throw Error('uri is not found'); }
 
-    const opts = {
+    return await fetch(`${this.API_URL}${uri}`, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'flxxyz/bytedance-mini-pay',
       },
+    }).then(r => r.json());
+  }
+
+  /**
+   * @summary 通用 create 函数
+   * @method _genParams
+   * @param {string} action 操作 create, query
+   * @param {object} options 额外请求参数
+   * @param {string} options.out_order_no 商户内部订单号
+   * @param {number} options.amount 下单金额(单位: 分)
+   * @param {string} options.subject 商品描述
+   * @param {string} options.body 商品详细
+   * @param {number} options.valid_time 过期时间 默认1800s(单位: 秒); 最小 15 分钟，最大两天
+   * @param {string} options.cp_extra 开发者自定义字段，回调原样回传
+   * @param {string} options.notify_url 商户自定义回调地址
+   * @param {string} options.thirdparty_id 服务商模式接入必传，第三方平台服务商 id，非服务商模式留空
+   * @param {string} options.disable_msg 是否屏蔽担保支付的推送消息，1-屏蔽 0-非屏蔽，接入 POI 必传
+   * @param {string} options.msg_page 担保支付消息跳转页
+   * @param {string} options.store_uid 多门店模式下必传，多门店模式下，门店 uid
+   * @param {string} options.all_settle 是否为分账后退款，1-分账后退款；0-分账前退款。分账后退款会扣减可提现金额，请保证余额充足
+   * @param {string} options.out_refund_no 商户分配的退款号
+   * @param {number} options.amount 退款金额(单位: 分)
+   * @param {string} options.reason 退款理由，长度上限 100
+   * @returns {object} 包含签名的所有参数
+   */
+  _genParams(action, options = {}) {
+    const basicParams = {
+      app_id: this.config.appId,
+      ...options,
     };
-    return await fetch(`${this.API_URL}${uri}`, opts).then(r => r.json());
+
+    if (action === 'create') {
+      if (options.notifyURL) {
+        basicParams.notify_url = this.config.notifyURL;
+      } else {
+        if (this.config.notifyURL) {
+          basicParams.notify_url = this.config.notifyURL;
+        }
+      }
+    }
+
+    return {
+      ...basicParams,
+      sign: this._genSign({ ...basicParams }),
+    };
   }
 
   /**
@@ -74,30 +140,20 @@ export class TTPay {
    * @param {string} options.disable_msg 是否屏蔽担保支付的推送消息，1-屏蔽 0-非屏蔽，接入 POI 必传
    * @param {string} options.msg_page 担保支付消息跳转页
    * @param {string} options.store_uid 多门店模式下必传，多门店模式下，门店 uid
-   * @returns {Promise} -
+   * @returns {Promise<Response>} 响应结果
    */
-  async createOrder(out_order_no, amount, subject, body, options = {}) {
+  createOrder(out_order_no, amount, subject, body, options = {}) {
     if (!options.valid_time) {
       options.valid_time = 1800;
     }
 
-    const basicParams = {
-      app_id: this.config.appId,
+    const params = this._genParams('create', {
       out_order_no,
       total_amount: amount,
       subject,
       body,
       ...options,
-    };
-
-    if (!this.config.notifyURL) {
-      basicParams.notify_url = this.config.notifyURL;
-    }
-
-    const params = {
-      ...basicParams,
-      sign: this._genSign({ ...basicParams }),
-    };
+    });
 
     return this._request('/create_order', params);
   }
@@ -108,19 +164,13 @@ export class TTPay {
    * @param {string} out_order_no 商户内部订单号
    * @param {object} options 额外请求参数
    * @param {string} options.thirdparty_id 服务商模式接入必传，第三方平台服务商 id，非服务商模式留空
-   * @returns {Promise} -
+   * @returns {Promise<Response>} 响应结果
    */
-  async queryOrder(out_order_no, options = {}) {
-    const basicParams = {
-      app_id: this.config.appId,
+  queryOrder(out_order_no, options = {}) {
+    const params = this._genParams('query', {
       out_order_no,
       ...options,
-    };
-
-    const params = {
-      ...basicParams,
-      sign: this._genSign({ ...basicParams }),
-    };
+    });
 
     return this._request('/query_order', params);
   }
@@ -139,26 +189,16 @@ export class TTPay {
    * @param {string} options.disable_msg 是否屏蔽担保支付的推送消息，1-屏蔽
    * @param {string} options.msg_page 担保支付消息跳转页
    * @param {string} options.all_settle 是否为分账后退款，1-分账后退款；0-分账前退款。分账后退款会扣减可提现金额，请保证余额充足
-   * @returns {Promise} -
+   * @returns {Promise<Response>} 响应结果
    */
-  async createRefund(out_order_no, out_refund_no, amount, reason, options = {}) {
-    const basicParams = {
-      app_id: this.config.appId,
+  createRefund(out_order_no, out_refund_no, amount, reason, options = {}) {
+    const params = this._genParams('create', {
       out_order_no,
       out_refund_no,
       refund_amount: amount,
       reason,
       ...options,
-    };
-
-    if (this.config.notifyURL) {
-      basicParams.notify_url = this.config.notifyURL;
-    }
-
-    const params = {
-      ...basicParams,
-      sign: this._genSign({ ...basicParams }),
-    };
+    });
 
     return this._request('/create_refund', params);
   }
@@ -169,19 +209,13 @@ export class TTPay {
    * @param {string} out_refund_no 商户分配的退款号
    * @param {object} options 额外请求参数
    * @param {string} options.thirdparty_id 服务商模式接入必传，第三方平台服务商 id，非服务商模式留空
-   * @returns {Promise} -
+   * @returns {Promise<Response>} 响应结果
    */
-  async queryRefund(out_refund_no, options = {}) {
-    const basicParams = {
-      app_id: this.config.appId,
+  queryRefund(out_refund_no, options = {}) {
+    const params = this._genParams('create', {
       out_refund_no,
       ...options,
-    };
-
-    const params = {
-      ...basicParams,
-      sign: this._genSign({ ...basicParams }),
-    };
+    });
 
     return this._request('/query_refund', params);
   }
@@ -190,11 +224,11 @@ export class TTPay {
    * @summary 检查请求签名
    * @method checkNotifySign
    * @param {object} body 请求体
-   * @returns {boolean} -
+   * @returns {boolean} 验证请求来源正确
    */
   checkNotifySign(body = {}) {
     const { msg_signature, timestamp, msg = '', nonce } = body;
-    const str = [this.config.TOKEN, timestamp, nonce, msg].sort().join();
+    const str = [this.config.TOKEN, timestamp, nonce, msg].sort().join('');
     const _signature = createHash('sha1').update(str).digest('hex');
     return msg_signature === _signature;
   }
@@ -203,7 +237,9 @@ export class TTPay {
    * @summary 回调响应结果
    * @method ackNotify
    * @param {Function} fn 回调处理函数
-   * @returns -
+   * @returns 收到回调且处理成功
    */
   ackNotify = (fn = () => { }) => fn('{"err_no":0,"err_tips":"success"}');
 }
+
+export default TTPay;
