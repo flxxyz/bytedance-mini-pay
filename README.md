@@ -1,7 +1,7 @@
 # bytedance-mini-pay
 字节跳动小程序支付SDK
 
-<a href="https://npmcharts.com/compare/vue?minimal=true"><img src="https://img.shields.io/npm/dm/bytedance-mini-pay.svg?sanitize=true" alt="Downloads" /></a>
+<a href="https://npmcharts.com/compare/bytedance-mini-pay?minimal=true"><img src="https://img.shields.io/npm/dm/bytedance-mini-pay.svg?sanitize=true" alt="Downloads" /></a>
 <a href="https://www.npmjs.com/package/bytedance-mini-pay"><img src="https://img.shields.io/npm/v/bytedance-mini-pay.svg?sanitize=true" alt="Version" /></a>
 <a href="https://www.npmjs.com/package/bytedance-mini-pay"><img src="https://img.shields.io/npm/l/bytedance-mini-pay.svg?sanitize=true" alt="License" /></a>
 
