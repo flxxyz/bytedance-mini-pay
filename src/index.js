@@ -58,7 +58,7 @@ export default class TTPay {
   /**
    * @summary 生成签名
    * @method _genSign
-   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/api/open-interface/payment/secure/UR#%E8%AF%B7%E6%B1%82%E7%AD%BE%E5%90%8D%E7%AE%97%E6%B3%95
+   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/server/ecpay/appendix/#%E8%AF%B7%E6%B1%82%E7%AD%BE%E5%90%8D%E7%AE%97%E6%B3%95
    * @param {object} params 签名的参数们
    * @returns {string} 签名
    */
@@ -151,7 +151,7 @@ export default class TTPay {
   /**
    * @summary 支付下单
    * @method createOrder
-   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/api/open-interface/payment/secure/YE#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%A2%84%E4%B8%8B%E5%8D%95
+   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/server/ecpay/server-doc#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%A2%84%E4%B8%8B%E5%8D%95
    * @param {string} out_order_no 商户内部订单号
    * @param {number} amount 下单金额(单位: 分)
    * @param {string} subject 商品描述
@@ -185,7 +185,7 @@ export default class TTPay {
   /**
    * @summary 订单查询
    * @method queryOrder
-   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/api/open-interface/payment/secure/YE#%E8%AE%A2%E5%8D%95%E6%9F%A5%E8%AF%A2
+   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/server/ecpay/server-doc#%E8%AE%A2%E5%8D%95%E6%9F%A5%E8%AF%A2
    * @param {string} out_order_no 商户内部订单号
    * @param {object} options 额外请求参数
    * @param {string} options.thirdparty_id 服务商模式接入必传，第三方平台服务商 id，非服务商模式留空
@@ -203,7 +203,7 @@ export default class TTPay {
   /**
    * @summary 退款
    * @method createRefund
-   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/api/open-interface/payment/secure/YE#%E9%80%80%E6%AC%BE%E8%AF%B7%E6%B1%82
+   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/server/ecpay/server-doc#%E9%80%80%E6%AC%BE%E8%AF%B7%E6%B1%82
    * @param {string} out_order_no 商户内部订单号
    * @param {string} out_refund_no 商户分配的退款号
    * @param {number} amount 退款金额(单位: 分)
@@ -232,7 +232,7 @@ export default class TTPay {
   /**
    * @summary 查询退款
    * @method queryRefund
-   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/api/open-interface/payment/secure/YE#%E6%9F%A5%E8%AF%A2%E9%80%80%E6%AC%BE
+   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/server/ecpay/server-doc#%E6%9F%A5%E8%AF%A2%E9%80%80%E6%AC%BE
    * @param {string} out_refund_no 商户分配的退款号
    * @param {object} options 额外请求参数
    * @param {string} options.thirdparty_id 服务商模式接入必传，第三方平台服务商 id，非服务商模式留空
@@ -250,7 +250,7 @@ export default class TTPay {
   /**
    * @summary 检查请求签名
    * @method checkNotifySign
-   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/api/open-interface/payment/secure/UR#%E5%9B%9E%E8%B0%83%E7%AD%BE%E5%90%8D%E7%AE%97%E6%B3%95
+   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/server/ecpay/appendix/#%E5%9B%9E%E8%B0%83%E7%AD%BE%E5%90%8D%E7%AE%97%E6%B3%95
    * @param {object} body 请求体
    * @returns {boolean} 验证请求来源正确
    */
@@ -264,7 +264,7 @@ export default class TTPay {
   /**
    * @summary 回调响应结果
    * @method ackNotify
-   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/api/open-interface/payment/secure/UR#%E5%9B%9E%E8%B0%83%E5%93%8D%E5%BA%94
+   * @link https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/server/ecpay/appendix/#%E5%9B%9E%E8%B0%83%E5%93%8D%E5%BA%94
    * @param {Function} fn 回调处理函数
    * @returns 收到回调且处理成功
    */
