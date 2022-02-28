@@ -49,9 +49,9 @@ if (ttpay.checkNotifySign(refundNotify)) {
 
 ## Reference
 
-- [字节小程序担保支付简介](https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/api/open-interface/payment/secure/RE)
-- [接口定义](https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/api/open-interface/payment/secure/YE)
-- [附录](https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/api/open-interface/payment/secure/UR)
+- [字节小程序担保支付简介](https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/server/ecpay/introduction/)
+- [接口定义](https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/server/ecpay/server-doc/)
+- [附录](https://microapp.bytedance.com/docs/zh-CN/mini-app/develop/server/ecpay/appendix/)
 
 ## License
 
